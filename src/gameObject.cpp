@@ -1,7 +1,7 @@
 #include "gameObject.h"
 #include "environment.h"
 
-GameObject::GameObject(Icon icon, Posititon pos) : _icon(icon), _pos(pos) {
+GameObject::GameObject(Icon icon, Position pos) : _icon(icon), _pos(pos) {
   _dir = NONE;
 }
 GameObject::~GameObject() {}

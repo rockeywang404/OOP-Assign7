@@ -3,11 +3,11 @@
 Icon IconFactory::NxMColor(Size size, Color color) {
 
   Icon icon;
-  for (int h = 0; h < height; ++h) {
+  for (int h = 0; h < size.height(); ++h) {
 
     std::vector<Cell> row;
 
-    for (int w = 0; w < width; ++w) {
+    for (int w = 0; w < size.width(); ++w) {
       row.emplace_back(Cell(color, " "));
     }
 
