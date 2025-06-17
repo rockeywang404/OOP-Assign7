@@ -7,14 +7,23 @@
 #include "environment.h"
 #include "controller.h"
 #include "gameObjectFactory.h"
-
+#include "AnsiPrint.h"
 
 Controller::Controller(View& view) : _view(view){
+    _player = SimpleGameObjectFactory::playerGameObject();
+	_objs.emplace_back(_player);
 
-    _objs.emplace_back(SimpleGameObjectFactory::playerGameObject());
-    for(int i = 0; i < 5; ++i){
-        _objs.emplace_back(SimpleGameObjectFactory::randomGameObject());
-    }
+	for (int i = 0; i < 10; ++i) {
+    	_objs.emplace_back(SimpleGameObjectFactory::diamondGameObject());
+	}
+
+	for (int i = 0; i < 20; ++i) {
+    	_objs.emplace_back(SimpleGameObjectFactory::wallGameObject());
+	}
+
+	for (int i = 0; i < 2; ++i) {
+    	_objs.emplace_back(SimpleGameObjectFactory::monsterGameObject());
+	}
 }
 
 void Controller::run() {
@@ -39,15 +48,47 @@ void Controller::run() {
         this->handleInput(input);
 
         _view.resetLatest();
-        for(GameObject* obj : _objs) 
+		
+		for(GameObject* obj : _objs) 
         {
-
-            obj->update();
-
-            _view.updateGameObject(obj);
+			if (obj->isDead()) continue;
+            obj->update(_objs);
         }
 
+		for (auto& obj : _objs) {
+		    if (obj == _player) continue;
+		   	if (_player->getPosition() == obj->getPosition()) {
+        		_player->onCollision(obj);
+    		}
+		}
+		
+    	for (auto it = _objs.begin(); it != _objs.end(); ) {
+        	GameObject* obj = *it;
+        	if (obj->isDead() && dynamic_cast<DiamondGameObject*>(obj)) {
+            	delete obj;
+            	it = _objs.erase(it);
+        	} else {
+            	++it;
+        	}
+    	
+		}
+		for (GameObject* obj : _objs) {
+		    if (obj->isDead()) continue;
+    		_view.updateGameObject(obj);
+		}
         _view.render();
+
+		if (_player->isDead()) {
+        	std::string str = "Game Over! Your score : " + std::to_string(_player->getScore()) + "\n";
+			std::cout << AnsiPrint(str.c_str(),YELLOW,RED, true, true);
+			break;
+    	}
+		if (_player->getScore() >= 5) {
+			std::string str = "You Win! Your score : " + std::to_string(_player->getScore()) + "\n";
+        	std::cout << AnsiPrint(str.c_str(),YELLOW,RED, true, true);
+        	break;
+	    }
+
         end = clock();
         // frame rate normalization
         double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;

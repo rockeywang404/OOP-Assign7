@@ -5,6 +5,7 @@
 #include <vector>
 #include "view.h"
 #include "gameObject.h"
+#include "playerGameObject.h"
 
 class Controller{
 
@@ -19,7 +20,7 @@ private:
 
     // Model
     std::vector<GameObject*> _objs;
-
+	PlayerGameObject* _player = nullptr;
     // View
     View& _view; 
 };

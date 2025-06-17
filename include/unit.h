@@ -8,6 +8,9 @@ struct Vec2 {
   int &y() { return e2; }
   int &width() { return e1; }
   int &height() { return e2; }
+  bool operator==(const Vec2& other) const {
+      return e1 == other.e1 && e2 == other.e2;
+  }
 };
 
 using Position = Vec2;
